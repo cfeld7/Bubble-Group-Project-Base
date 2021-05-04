@@ -116,7 +116,7 @@ router.route('/player/:player_id')
   });
 
 /// /////////////////////////////////
-/// ////////Teams Endpoints//////////
+/// ////////Playoff Teams Endpoints//////////
 /// /////////////////////////////////
 router.route('/teams')
   .get(async (req, res) => {
@@ -167,4 +167,103 @@ router.route('/teams')
       res.error('Server error');
     }
   });
+
+  /// /////////////////////////////////
+/// ////////Sponsor Endpoints//////////
+/// /////////////////////////////////
+router.route('/sponsors')
+.get(async (req, res) => {
+  try {
+    const sponsors = await db.Sponsors.findAll();
+    res.json(sponsors);
+  } catch (err) {
+    console.error(err);
+    res.error('Server error');
+  }
+});
+
+  /// /////////////////////////////////
+/// ////////Endorsement Endpoints//////////
+/// /////////////////////////////////
+router.route('/endorsements')
+.get(async (req, res) => {
+  try {
+    const endorsements = await db.Endorsements.findAll();
+    res.json(endorsements);
+  } catch (err) {
+    console.error(err);
+    res.error('Server error');
+  }
+});
+
+/// /////////////////////////////////
+/// ////////Teams Endpoints (we only need this table for team_names column)//////////
+/// /////////////////////////////////
+router.route('/teamname')
+  .get(async (req, res) => {
+    try {
+      const teamname = await db.Teams.findAll();
+      res.json(teamname);
+    } catch (err) {
+      console.error(err);
+      res.error('Server error');
+    }
+  })
+  .put(async (req, res) => {
+    try {
+      await db.Teams.update(
+        {
+          team_id: req.body.team_id,
+          city: req.body.city,
+          state: req.body.state,
+          gm:req.body.gm,
+          arena:req.body.arena,
+          year_founded:req.body.year_founded,
+          name:req.body.name
+        },
+        {
+          where: {
+            team_id: req.body.team_id
+          }
+        }
+      );
+      res.send('Team Successfully Updated');
+    } catch (err) {
+      console.error(err);
+      res.error('Server error');
+    }
+  })
+  .post(async (req, res) => {
+    const teamname = await db.Teams.findAll();
+    const currentId = (await players.length) + 1;
+    try {
+      const newteamname = await db.Teams.create({
+          team_id: req.body.team_id,
+          city: req.body.city,
+          state: req.body.state,
+          gm:req.body.gm,
+          arena:req.body.arena,
+          year_founded:req.body.year_founded,
+          name:req.body.name
+      });
+      res.json(newteamname);
+    } catch (err) {
+      console.error(err);
+      res.error('Server error');
+    }
+  });
+
+ /// /////////////////////////////////
+/// ////////Awards Endpoints//////////
+/// /////////////////////////////////
+router.route('/awards')
+.get(async (req, res) => {
+  try {
+    const awards = await db.Awards.findAll();
+    res.json(awards);
+  } catch (err) {
+    console.error(err);
+    res.error('Server error');
+  }
+});
 export default router;
